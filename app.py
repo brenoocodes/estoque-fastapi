@@ -1,6 +1,7 @@
 import uvicorn
 from src.routes.funcionarios.index import *
 from src.routes.produtos.index import *
+from src.routes.fornecedores.index import *
 
 
 if __name__ == "__main__":

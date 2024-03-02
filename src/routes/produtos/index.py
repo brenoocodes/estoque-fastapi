@@ -1,9 +1,7 @@
 from fastapi import status, HTTPException
-from fastapi.responses import JSONResponse
 from src.configure import app, router, db_dependency
 from src.models import models
 from src.config.senhas import *
-from src.schemas.funcionarios.index import Funcionarios, FuncionarioPut
 from src.schemas.produtos.index import Produtos, ProdutosPut
 from src.config.login import logado
 
@@ -77,27 +75,6 @@ async def buscar_produtos_por_id(db: db_dependency, user: logado, id: int):
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
 
-# @router.get("/funcionarios/{matricula}", status_code=status.HTTP_200_OK)
-# async def buscar_funcionario_por_id(db: db_dependency, user: logado, matricula: int):
-#     if user is None:
-#         raise HTTPException(status_code=401, detail='Você não está logado')
-#     if not user.get('is_admin', False):
-#         raise HTTPException(status_code=403, detail='Você não tem permissão para acessar esta funcionalidade')
-#     try:
-#         funcionario = db.query(models.Funcionarios).filter(models.Funcionarios.matricula == matricula).first()
-#         if not funcionario:
-#             return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Esse funcionário não existe")
-#         funcionario_atual = {}
-#         funcionario_atual['matricula'] = funcionario.matricula
-#         funcionario_atual['nome'] = funcionario.nome
-#         funcionario_atual['email'] = funcionario.email
-#         funcionario_atual['admin'] = funcionario.administrador
-        
-#         return JSONResponse(funcionario_atual)
-
-#     except Exception as e:
-#         print(e)
-#         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
          
 @router.post("/produtos", status_code=status.HTTP_201_CREATED)
 async def criar_produtos(produto: Produtos, db: db_dependency, user: logado):
@@ -117,43 +94,31 @@ async def criar_produtos(produto: Produtos, db: db_dependency, user: logado):
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
 
 
+@router.put("/produtos/{id}", status_code=status.HTTP_200_OK)
+async def alterar_produto(db: db_dependency, user: logado, produto: ProdutosPut, id: int):
+    if not user.get('is_admin', False):
+        raise HTTPException(status_code=403, detail='Você não tem permissão para acessar esta funcionalidade')
+    try:
+        produto_existente = db.query(models.Produtos).filter(models.Produtos.id == id).first()
+        if not produto_existente:
+            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Produto não existe")
+        if produto.nome is not None:
+            produto_existente.nome = produto.nome
+        if produto.nome_estoque is not None:
+            produto_existente.nome_estoque = produto.nome_estoque
+        if produto.medida is not None:
+            produto_existente.medida = produto.medida
+        if produto.preco is not None:
+            produto_existente.preco = produto.preco
+        if produto.quantidade is not None:
+            produto_existente.quantidade = produto.quantidade
+        db.commit()
+        db.refresh(produto_existente)
+        return {"message": "produto atualizado com sucesso", "produto": produto_existente} 
 
-# @router.put("/funcionarios/{matricula}", status_code=status.HTTP_200_OK)
-# async def modificar_funcionario(db: db_dependency, user: logado, funcionario: FuncionarioPut, matricula: int):
-#     if user is None:
-#         raise HTTPException(status_code=401, detail='Você não está logado')
-#     if not user.get('is_admin', False):
-#         raise HTTPException(status_code=403, detail='Você não tem permissão para acessar esta funcionalidade')
-#     try:
-#         funcionario_existente = db.query(models.Funcionarios).filter(models.Funcionarios.matricula == matricula).first()
-#         if not funcionario_existente:
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Funcionário não encontrado")
-#         if funcionario.email != funcionario_existente.email:
-#             email_existente = db.query(models.Funcionarios).filter(models.Funcionarios.email == funcionario.email).first()
-#             if email_existente:
-#                 return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="E-mail já cadastrado")
-#         if funcionario.nome is not None:
-#             funcionario_existente.nome = funcionario.nome
-#         if funcionario.email is not None:
-#             funcionario_existente.email = funcionario.email
-#         if funcionario.senha is not None:
-#             senha = gerar_senha_criptografada(funcionario.senha)
-#             funcionario_existente.senha = senha
-#         if funcionario.administrador is not None:
-#             funcionario_existente.admin = funcionario.administrador
-#         db.commit()
-#         db.refresh(funcionario_existente)
+    except Exception as e:
+        print(e)
+        return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
 
-#         funcionario_atualizado = {
-#             "matricula": funcionario_existente.matricula,
-#             "nome": funcionario_existente.nome,
-#             "email": funcionario_existente.email,
-#             "administrador": funcionario_existente.administrador
-#         }
-#         return {"message": "Funcionário atualizado com sucesso", "funcionario": funcionario_atualizado}
-        
-#     except Exception as e:
-#         print(e)
-#         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
     
 app.include_router(router)
