@@ -1,0 +1,8 @@
+pip install fastapi
+pip install SQLAlchemy
+pip install pymysql
+pip install "passlib[bcrypt]"
+pip install "python-jose[cryptography]"
+pip install python-multipart
+pip install uvicorn
+pip install pydantic[email]
