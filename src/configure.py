@@ -28,7 +28,7 @@ router = APIRouter()
 
 
 
-SQL = "mysql+pymysql://root:breno19042003@localhost/estoqueapi"
+SQL = "postgresql://postgres.pkuiqzlsctvbvkjbadrz:Po6en4eOD7TvxWcT@aws-0-us-west-1.pooler.supabase.com:5432/postgres"
 engine = create_engine(SQL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
