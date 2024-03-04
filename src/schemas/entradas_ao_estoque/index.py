@@ -13,3 +13,4 @@ class EntradaEstoquePut(BaseModel):
     quantidade: Optional[int] = None
     fornecedor_id: Optional[int] = None
     
+    

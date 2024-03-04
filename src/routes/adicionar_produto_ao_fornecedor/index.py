@@ -46,7 +46,7 @@ async def excluir_produto_do_fornecedor(db: db_dependency, user: logado, fornece
         db.delete(relacao)
         db.commit()
         # Mensagem corrigida
-        return {"mensagem": f"A relação entre {relacao.fornecedores.nome_fantasia} e {produto_nome} foi excluída com sucesso"}
+        return {"mensagem": f"A relação entre {fornecedor_nome} e {produto_nome} foi excluída com sucesso"}
         
     except Exception as e:
         print(e)

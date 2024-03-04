@@ -21,12 +21,6 @@ class Funcionarios(Base):
     administrador = Column(Boolean, default=False)
     data_criacao = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    entradas = relationship('Entradas', backref='funcionario', lazy=True)
-
-    funcionario_responsavel_saida = relationship('Saidas', backref='funcionario_responsavel', lazy=True, foreign_keys='Saidas.funcionario_responsavel_matricula')
-
-    funcionario_solicitante_saida = relationship('Saidas', backref='funcionario_solicitante', lazy=True, foreign_keys='Saidas.funcionario_solicitante_matricula')
-
 class Fornecedores(Base):
     __tablename__ = 'fornecedores'
     # Atributos da tabela fornecedores
@@ -36,8 +30,6 @@ class Fornecedores(Base):
     nome_fantasia = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
     telefone = Column(String(14), nullable=False)
-
-    entradas = relationship('Entradas', backref='fornecedor', lazy=True)
 
 # Definição da classe Produtos
 class Produtos(Base):
@@ -50,10 +42,6 @@ class Produtos(Base):
     preco = Column(Float, default=0.0)
     quantidade = Column(Integer)
 
-    entradas = relationship('Entradas', backref='produto', lazy=True)
-
-    saidas = relationship('Saidas', backref='produtos', lazy=True)
-
     # Relacionamento com a tabela Fornecedores
     fornecedores = relationship('Fornecedores', secondary='produtos_fornecedores', backref=backref('produtos', lazy='dynamic'))
 
@@ -65,7 +53,7 @@ class ProdutosFornecedores(Base):
     fornecedor_id = Column(Integer, ForeignKey('fornecedores.id'), primary_key=True)
 
 # Definição da classe EntradasEstoque
-class Entradas(Base):
+class EntradasEstoque(Base):
     __tablename__ = 'entradaestoque'
     # Atributos da tabela entradaestoque
     id = Column(Integer, primary_key=True)
@@ -74,21 +62,18 @@ class Entradas(Base):
     fornecedor_id = Column(Integer, ForeignKey('fornecedores.id'), nullable=False)
     data_entrada = Column(DateTime, nullable=False, default=datetime.utcnow)
     quantidade = Column(Integer, nullable=False)
-    funcionario_responsavel_matricula = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
+    funcionario_matricula = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
 
 # Definição da classe SaidasEstoque
-class Saidas(Base):
+class SaidasEstoque(Base):
     __tablename__='saidasestoque'
     # Atributos da tabela saidasestoque
     id = Column(Integer, primary_key=True)
     produto_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
     data_saida = Column(DateTime, nullable=False, default=datetime.utcnow)
     quantidade = Column(Integer, nullable=False)
-
-    funcionario_responsavel_matricula = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
-    funcionario_solicitante_matricula = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
-
-
+    funcionario_responsavel = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
+    funcionario_requisitante = Column(Integer, ForeignKey('funcionarios.matricula'), nullable=False)
 
 # Base.metadata.drop_all(bind=engine)
 # Base.metadata.create_all(bind=engine)
