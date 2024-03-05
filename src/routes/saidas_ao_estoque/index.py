@@ -28,22 +28,29 @@ async def buscar_saida_do_estoque(db: db_dependency, user: logado):
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um erro: {e}")
 
-@router.get("/saida_ao_estoque/{saida_id}", status_code=status.HTTP_200_OK)
-async def buscar_saida_do_estoque(db: db_dependency, user: logado, saida_id: int):
+@router.get("/saida_ao_estoque/logado", status_code=status.HTTP_200_OK)
+async def buscar_saida_do_estoque(db: db_dependency, user: logado):
     if user is None:
         raise HTTPException(status_code=401, detail='Você não está logado')
     try:
-        saida = db.query(Saidas).filter(Saidas.id == saida_id).first()
-        if not saida:
-            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Saída não existe")
-        saida_atual = {}
-        saida_atual['id'] = saida.id
-        saida_atual['produto'] = saida.produtos.nome_estoque
-        saida_atual['quantidade'] = saida.quantidade
-        saida_atual['funcionário_responsável'] = saida.funcionario_responsavel.nome
-        saida_atual['funcionário_solicitante'] = saida.funcionario_solicitante.nome
-        
-        return {'saida': saida_atual}
+        user_matricula = user.get('id')
+        saidas = db.query(Saidas).filter(Saidas.funcionario_responsavel_matricula == user_matricula).all()
+        lista_de_saidas = []
+        for saida in saidas:
+            saida_atual = {}
+            saida_atual['id'] = saida.id
+            saida_atual['produto'] = saida.produtos.nome_estoque
+            saida_atual['quantidade'] = saida.quantidade
+            saida_atual['funcionário_responsável'] = saida.funcionario_responsavel.nome
+            saida_atual['funcionário_solicitante'] = saida.funcionario_solicitante.nome
+            lista_de_saidas.append(saida_atual)
+        if len(lista_de_saidas) == 0:
+            return {'Mensagem': 'Nenhuma saída cadastrada'}
+        else:
+            return {'saidas': lista_de_saidas}
+
+
+
     except Exception as e:
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um erro: {e}")

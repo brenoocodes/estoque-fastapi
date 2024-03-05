@@ -29,23 +29,28 @@ async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
 
-@router.get("/entrada_ao_estoque/{entrada_id}", status_code=status.HTTP_200_OK)
-async def buscar_entrada_ao_estoque(db: db_dependency, user: logado, entrada_id: int):
+@router.get("/entrada_ao_estoque/logado", status_code=status.HTTP_200_OK)
+async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
     if user is None:
         raise HTTPException(status_code=401, detail='Você não está logado')
     try:
-        entrada = db.query(Entradas).filter(Entradas.id == entrada_id).first()
-        if not entrada:
-            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Entrada não existe")
-        entrada_atual = {}
-        entrada_atual['id'] = entrada.id
-        entrada_atual['nota'] = entrada.nota
-        entrada_atual['produto'] = entrada.produto.nome_estoque
-        entrada_atual['fornecedor'] = entrada.fornecedor.nome_fantasia
-        entrada_atual['quantidade'] = entrada.quantidade
-        entrada_atual['funcionário_responsável'] = entrada.funcionario.nome
+        user_matricula = user.get('id')
+        entradas = db.query(Entradas).filter(Entradas.funcionario_responsavel_matricula == user_matricula).all()
         
-        return {'entrada': entrada_atual}
+        lista_de_entradas = []
+        for entrada in entradas:
+            entrada_atual = {}
+            entrada_atual['id'] = entrada.id
+            entrada_atual['nota'] = entrada.nota
+            entrada_atual['produto'] = entrada.produto.nome_estoque
+            entrada_atual['fornecedor'] = entrada.fornecedor.nome_fantasia
+            entrada_atual['quantidade'] = entrada.quantidade
+            entrada_atual['funcionário_responsável'] = entrada.funcionario.nome
+            lista_de_entradas.append(entrada_atual)
+        if len(lista_de_entradas) == 0:
+            return {'Mensagem': 'Nenhuma entrada cadastrada'}
+        else:
+            return {'entradas': lista_de_entradas}
     except Exception as e:
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um error: {e}")
