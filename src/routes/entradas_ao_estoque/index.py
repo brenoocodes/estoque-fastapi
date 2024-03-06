@@ -4,6 +4,7 @@ from src.configure import app, router, db_dependency
 from src.models.models import Produtos, ProdutosFornecedores, Fornecedores, Funcionarios, Entradas
 from src.schemas.entradas_ao_estoque.index import EntradaEstoque, EntradaEstoquePut
 from src.config.login import logado
+from src.config.time import converter_horario
 
 @router.get("/entrada_ao_estoque", status_code=status.HTTP_200_OK)
 async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
@@ -20,6 +21,7 @@ async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
             entrada_atual['fornecedor'] = entrada.fornecedor.nome_fantasia
             entrada_atual['quantidade'] = entrada.quantidade
             entrada_atual['funcionário_responsável'] = entrada.funcionario.nome
+            entrada_atual['horario'] = converter_horario(entrada.data_entrada)
             lista_de_entradas.append(entrada_atual)
         if len(lista_de_entradas) == 0:
             return {'Mensagem': 'Nenhuma entrada cadastrada'}
@@ -46,6 +48,7 @@ async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
             entrada_atual['fornecedor'] = entrada.fornecedor.nome_fantasia
             entrada_atual['quantidade'] = entrada.quantidade
             entrada_atual['funcionário_responsável'] = entrada.funcionario.nome
+            entrada_atual['horario'] = converter_horario(entrada.data_entrada)
             lista_de_entradas.append(entrada_atual)
         if len(lista_de_entradas) == 0:
             return {'Mensagem': 'Nenhuma entrada cadastrada'}

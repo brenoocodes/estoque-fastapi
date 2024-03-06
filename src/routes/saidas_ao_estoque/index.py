@@ -4,6 +4,7 @@ from src.configure import app, router, db_dependency
 from src.models.models import Produtos, Funcionarios, Saidas
 from src.schemas.saidas_do_estoque.index import SaidaEstoque, SaidaEstoquePut
 from src.config.login import logado
+from src.config.time import converter_horario
 
 @router.get("/saida_ao_estoque", status_code=status.HTTP_200_OK)
 async def buscar_saida_do_estoque(db: db_dependency, user: logado):
@@ -19,6 +20,7 @@ async def buscar_saida_do_estoque(db: db_dependency, user: logado):
             saida_atual['quantidade'] = saida.quantidade
             saida_atual['funcionário_responsável'] = saida.funcionario_responsavel.nome
             saida_atual['funcionário_solicitante'] = saida.funcionario_solicitante.nome
+            saida_atual['horario'] = converter_horario(saida.data_saida)
             lista_de_saidas.append(saida_atual)
         if len(lista_de_saidas) == 0:
             return {'Mensagem': 'Nenhuma saída cadastrada'}
@@ -43,6 +45,7 @@ async def buscar_saida_do_estoque(db: db_dependency, user: logado):
             saida_atual['quantidade'] = saida.quantidade
             saida_atual['funcionário_responsável'] = saida.funcionario_responsavel.nome
             saida_atual['funcionário_solicitante'] = saida.funcionario_solicitante.nome
+            saida_atual['horario'] = converter_horario(saida.data_saida)
             lista_de_saidas.append(saida_atual)
         if len(lista_de_saidas) == 0:
             return {'Mensagem': 'Nenhuma saída cadastrada'}
