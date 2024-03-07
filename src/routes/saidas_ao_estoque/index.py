@@ -25,6 +25,7 @@ async def buscar_saida_do_estoque(db: db_dependency, user: logado):
         if len(lista_de_saidas) == 0:
             return {'Mensagem': 'Nenhuma saída cadastrada'}
         else:
+            lista_de_saidas.reverse()  # Inverte a lista
             return {'saidas': lista_de_saidas}
     except Exception as e:
         print(e)
@@ -50,13 +51,12 @@ async def buscar_saida_do_estoque(db: db_dependency, user: logado):
         if len(lista_de_saidas) == 0:
             return {'Mensagem': 'Nenhuma saída cadastrada'}
         else:
+            lista_de_saidas.reverse()  # Inverte a lista
             return {'saidas': lista_de_saidas}
-
-
-
     except Exception as e:
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ocorreu um erro: {e}")
+
 
 @router.post('/saida_ao_estoque', status_code=status.HTTP_201_CREATED)
 async def adicionar_saida_do_estoque(db: db_dependency, user: logado, saida: SaidaEstoque):

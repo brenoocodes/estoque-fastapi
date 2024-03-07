@@ -31,11 +31,13 @@ async def buscar_produtos(db: db_dependency, user: logado):
             if len(lista_de_fornecedores) == 0:
                 produto_atual['fornecedores'] = 'Esse produto ainda não tem nenhum fornecedor cadastrado'
             else:
+                lista_de_fornecedores = sorted(lista_de_fornecedores, key=lambda x: x['nome_fantasia'])
                 produto_atual['fornecedores'] = lista_de_fornecedores
             lista_de_produtos.append(produto_atual)
         if len(lista_de_produtos) == 0:
             return {'message': 'Ainda não temos nenum produto cadastrado'}
         else:
+            lista_de_produtos = sorted(lista_de_produtos, key=lambda x: x['nome_estoque'])
             return {'produtos': lista_de_produtos}
     except Exception as e:
         print(e)
@@ -64,9 +66,11 @@ async def buscar_produtos_por_id(db: db_dependency, user: logado, id: int):
             fornecedor_atual['razao_social'] = fornecedor.razao_social
             fornecedor_atual['nome_fantasia'] = fornecedor.nome_fantasia
             lista_de_fornecedores.append(fornecedor_atual)
+
         if len(lista_de_fornecedores) == 0:
             produto_atual['fornecedores'] = 'Esse produto ainda não tem nenhum fornecedor cadastrado'
         else:
+            lista_de_fornecedores = sorted(lista_de_fornecedores, key=lambda x: x['nome_fantasia'])
             produto_atual['fornecedores'] = lista_de_fornecedores
 
         return(produto_atual)

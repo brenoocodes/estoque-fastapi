@@ -26,6 +26,7 @@ async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
         if len(lista_de_entradas) == 0:
             return {'Mensagem': 'Nenhuma entrada cadastrada'}
         else:
+            lista_de_entradas.reverse()
             return {'entradas': lista_de_entradas}
     except Exception as e:
         print(e)
@@ -53,6 +54,7 @@ async def buscar_entrada_ao_estoque(db: db_dependency, user: logado):
         if len(lista_de_entradas) == 0:
             return {'Mensagem': 'Nenhuma entrada cadastrada'}
         else:
+            lista_de_entradas.reverse()
             return {'entradas': lista_de_entradas}
     except Exception as e:
         print(e)

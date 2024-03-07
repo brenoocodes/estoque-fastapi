@@ -30,11 +30,13 @@ async def buscar_fornecedores(db: db_dependency, user: logado):
             if len(lista_de_produtos) == 0:
                 fornecedor_atual['produtos'] = 'Esse fornecedor ainda não tem produtos relacionados'
             else:
+                lista_de_produtos = sorted(lista_de_produtos, key=lambda x: x['nome_estoque'])
                 fornecedor_atual['produtos'] = lista_de_produtos
             lista_de_fornecedores.append(fornecedor_atual)
         if len(lista_de_fornecedores) == 0:
             return {'message': 'Ainda não temos nenhum fornecedor cadastrado'}
         else:
+            lista_de_fornecedores = sorted(lista_de_fornecedores, key=lambda x: x['nome_fantasia'])
             return {'fornecedores': lista_de_fornecedores}
     except Exception as e:
         print(e)
