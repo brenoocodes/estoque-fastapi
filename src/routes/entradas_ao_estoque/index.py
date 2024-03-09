@@ -178,7 +178,7 @@ async def alterar_entrada_ao_estoque(db: db_dependency, user: logado, entrada: E
             novo_fornecedor = db.query(Fornecedores).filter(Fornecedores.id == entrada.fornecedor_id).first()
             if not novo_fornecedor:
                 return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fornecedor novo não encontrado")
-
+            entrada_existente.fornecedor_id = novo_fornecedor.id
 
         db.commit()
         db.refresh(entrada_existente)
