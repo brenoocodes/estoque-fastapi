@@ -62,7 +62,7 @@ async def login(login: Login, db: db_dependency):
             }
             return reponse
         else:
-            return {'senha incorreta'}
+            return {'mensagem': 'Senha incorreta'}
     except Exception as e:
         print(e)
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Erro ao logar {e}')
