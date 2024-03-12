@@ -20,6 +20,7 @@ async def buscar_funcionarios(db: db_dependency, user: logado):
             funcionario_atual['email'] = funcionario.email
             funcionario_atual['administrador'] = funcionario.administrador
             lista_de_funcionarios.append(funcionario_atual)
+        lista_de_funcionarios = sorted(lista_de_funcionarios, key=lambda x:x['nome'])
         return lista_de_funcionarios
     except Exception as e:
         print(e)
